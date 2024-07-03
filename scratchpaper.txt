@@ -1,0 +1,18 @@
+Important functions....
+
+
+
+function dayOfYear(month, day) {
+    // Array with days in each month (non-leap year)
+    const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    // Initialize day of the year with the day of the given month
+    let dayOfYear = day;
+
+    // Sum days of all previous months
+    for (let i = 0; i < month - 1; i++) {
+        dayOfYear += daysInMonth[i];
+    }
+
+    return dayOfYear;
+}

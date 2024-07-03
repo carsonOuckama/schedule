@@ -1,0 +1,6 @@
+Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,
+Kaitlin Karma,Kaitlin Karma,Kaitlin Karma,null,null,Sam Super,null,
+Sam Super,null,null,null,Sam Super,null,null,
+null,null,null,Kaitlin Karma,Kaitlin Karma,Carson Crazy,Kaitlin Karma,
+null,null,Carson Crazy,null,Carson Crazy,Kaitlin Karma,null,
+Minimum Shifts met

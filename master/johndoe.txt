@@ -1,0 +1,22 @@
+Employee Name
+Employee Number
+Employee password
+Prefered Shifts in a week
+Minimum Shifts in a week
+Maximum Shifts in a week
+Sunday     
+Monday
+Tuesday
+Wednesday
+Thursday
+Friday
+Saturday
+Days Off            Such as: 6|M,16|C,234|N
+Employee Work constance     Describes how often they should work, they higher the more often they will work
+Admin                       True/False
+Store Access        Such as: B,Y,Both 
+
+A == Allday
+O == Open
+C == Close
+N == None
