@@ -11,7 +11,7 @@ A
 A
 C
 O
-1|O
+11|C
 0
 False
 Both

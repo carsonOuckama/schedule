@@ -11,7 +11,7 @@ C
 A
 O
 N
-4|C
+11|C
 0
 False
 Both

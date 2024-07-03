@@ -423,11 +423,75 @@ function LookForAvailability(daysOff, dayIndex, shift) {
     return true;
 }
 
-function CanTakeDayOff(employee, dayOff) {
+function CanTakeDayOff(emp, dayOff) {
     var dayNumber = dayOff.split("|")[0];
     var shiftType = dayOff.split("|")[1];
-    var dayOffCount = 0;
-    var employeeCount = 0;
+    //var dayOffCount = 0;
+    //var employeeCount = 0;
+
+    var closestSunday = ClosestSunday(dayNumber);
+    var employees = Parse();
+    var schedule = new Schedule();
+
+    for (var employee of employees) {
+        if (emp.name === employee.name) continue;
+        for (var i = 0; i < 28; i++) {
+            var weekIndex = Math.floor( i / 4 );
+            var dayIndex = closestSunday + weekIndex;
+            var shiftLevel = i % 4;
+            var shift = i % 2 === 0 ? 'O' : 'C';
+            if (employee.availability[weekIndex] === shift || employee.availability[weekIndex] === "A") {
+                if (LookForAvailability(employee.daysOff, dayIndex, shift)) {
+                    if (employee.store === "Both") {
+                        schedule.week[weekIndex][shiftLevel].push(employee.name);
+                    } else if (employee.store === "B" && shiftLevel < 2) {
+                        schedule.week[weekIndex][shiftLevel].push(employee.name);
+                    } else if (employee.store === "Y" && shiftLevel > 1) {
+                        schedule.week[weekIndex][shiftLevel].push(employee.name);
+                    }
+                }
+            }
+        }
+    }
+
+    var dayIndex = dayNumber - closestSunday;
+    var lengthZero = false;
+
+    if (emp.store === "Both") {
+        if (shiftType === "N") {
+            lengthZero = schedule.week[dayIndex][0].length === 0 ? true : lengthZero;
+            lengthZero = schedule.week[dayIndex][1].length === 0 ? true : lengthZero;
+            lengthZero = schedule.week[dayIndex][2].length === 0 ? true : lengthZero;
+            lengthZero = schedule.week[dayIndex][3].length === 0 ? true : lengthZero;
+        } else if (shiftType === "O") {
+            lengthZero = schedule.week[dayIndex][1].length === 0 ? true : lengthZero;
+            lengthZero = schedule.week[dayIndex][3].length === 0 ? true : lengthZero;
+        } else if (shiftType === "C") {
+            lengthZero = schedule.week[dayIndex][0].length === 0 ? true : lengthZero;
+            lengthZero = schedule.week[dayIndex][2].length === 0 ? true : lengthZero;
+        }
+    } else if (emp.store === "Y") {
+        if (shiftType === "N") {
+            lengthZero = schedule.week[dayIndex][2].length === 0 ? true : lengthZero;
+            lengthZero = schedule.week[dayIndex][3].length === 0 ? true : lengthZero;
+        } else if (shiftType === "O") {
+            lengthZero = schedule.week[dayIndex][3].length === 0 ? true : lengthZero;
+        } else if (shiftType === "C") {
+            lengthZero = schedule.week[dayIndex][2].length === 0 ? true : lengthZero;
+        }
+    } else if (emp.store === "C") {
+        if (shiftType === "N") {
+            lengthZero = schedule.week[dayIndex][0].length === 0 ? true : lengthZero;
+            lengthZero = schedule.week[dayIndex][1].length === 0 ? true : lengthZero;
+        } else if (shiftType === "O") {
+            lengthZero = schedule.week[dayIndex][1].length === 0 ? true : lengthZero;
+        } else if (shiftType === "C") {
+            lengthZero = schedule.week[dayIndex][0].length === 0 ? true : lengthZero;
+        }
+    }
+
+    return !lengthZero;
+
 
     /*
     var employees = Parse();
@@ -470,11 +534,6 @@ function CanTakeDayOff(employee, dayOff) {
     // My current method of checking will not work, because just because the other emplyee hasn't requested that day off doesn't mean they can work that day,
     // One way we could solve this is to find the closest sunday? and then build a soduku prolbem and just look at the single day?
 
-    if (employeeCount - dayOffCount > 1) {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 function ClosestSunday(num) {
@@ -611,8 +670,4 @@ function BuildWorkWeek(start, callback) {
 
     fs.writeFile(__dirname + "/master/schedule.txt", scheduleString, callback);
     
-}
-
-for (var i = 6; i < 25; i++) {
-    console.log(ClosestSunday(i) + " " + i)
 }
