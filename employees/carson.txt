@@ -11,7 +11,7 @@ O
 A
 A
 N
-
+0|N
 0
 True
 Y
