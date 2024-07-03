@@ -429,6 +429,7 @@ function CanTakeDayOff(employee, dayOff) {
     var dayOffCount = 0;
     var employeeCount = 0;
 
+    /*
     var employees = Parse();
     for (var emp of employees) {
         if (emp.name === employee.name) continue;
@@ -465,7 +466,23 @@ function CanTakeDayOff(employee, dayOff) {
             }
         }
     }
-    console.log(dayOffCount);
+    */
+    // My current method of checking will not work, because just because the other emplyee hasn't requested that day off doesn't mean they can work that day,
+    // One way we could solve this is to find the closest sunday? and then build a soduku prolbem and just look at the single day?
+
+    if (employeeCount - dayOffCount > 1) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function ClosestSunday(num) {
+    var text = fs.readFileSync(__dirname + "/master/EnvironmentVariables.txt", "utf-8");
+    text = text.split("\r\n");
+    var firstSunday = parseInt(text[1]) + 1;
+
+    return num - ((num - firstSunday) % 7);
 }
 
 function BuildWorkWeek(start, callback) {
@@ -594,4 +611,8 @@ function BuildWorkWeek(start, callback) {
 
     fs.writeFile(__dirname + "/master/schedule.txt", scheduleString, callback);
     
+}
+
+for (var i = 6; i < 25; i++) {
+    console.log(ClosestSunday(i) + " " + i)
 }
