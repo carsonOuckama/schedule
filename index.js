@@ -426,8 +426,6 @@ function LookForAvailability(daysOff, dayIndex, shift) {
 function CanTakeDayOff(emp, dayOff) {
     var dayNumber = dayOff.split("|")[0];
     var shiftType = dayOff.split("|")[1];
-    //var dayOffCount = 0;
-    //var employeeCount = 0;
 
     var closestSunday = ClosestSunday(dayNumber);
     var employees = Parse();
@@ -491,48 +489,6 @@ function CanTakeDayOff(emp, dayOff) {
     }
 
     return !lengthZero;
-
-
-    /*
-    var employees = Parse();
-    for (var emp of employees) {
-        if (emp.name === employee.name) continue;
-        if (employee.store === "Y") {
-            if (emp.store === "Y" || emp.store === "Both") {
-                employeeCount++;    
-                if (shiftType === "N") {
-                    if (emp.daysOff.includes(dayNumber + "|N") || emp.daysOff.includes(dayNumber + "|O") || emp.daysOff.includes(dayNumber + "|C")) {
-                        dayOffCount++;
-                    }
-                } else if (emp.daysOff.includes(dayOff) || emp.daysOff.includes(dayNumber + "|N")) {
-                    dayOffCount++;
-                }
-            }
-        } else if (employee.store === "B") {
-            if (emp.store === "B" || emp.store === "Both") {
-                employeeCount++;
-                if (shiftType === "N") {
-                    if (emp.daysOff.includes(dayNumber + "|N") || emp.daysOff.includes(dayNumber + "|O") || emp.daysOff.includes(dayNumber + "|C")) {
-                        dayOffCount++;
-                    }
-                } else if (emp.daysOff.includes(dayOff) || emp.daysOff.includes(dayNumber + "|N")) {
-                    dayOffCount++;
-                }    
-            }
-        } else if (employee.store === "Both") {
-            employeeCount++;
-            if (shiftType === "N") {
-                if (emp.daysOff.includes(dayNumber + "|N") || emp.daysOff.includes(dayNumber + "|O") || emp.daysOff.includes(dayNumber + "|C")) {
-                    dayOffCount++;
-                }
-            } else if (emp.daysOff.includes(dayOff) || emp.daysOff.includes(dayNumber + "|N")) {
-                dayOffCount++;
-            }
-        }
-    }
-    */
-    // My current method of checking will not work, because just because the other emplyee hasn't requested that day off doesn't mean they can work that day,
-    // One way we could solve this is to find the closest sunday? and then build a soduku prolbem and just look at the single day?
 
 }
 
