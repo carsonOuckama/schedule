@@ -67,6 +67,45 @@ app.post('/signin', function(req, res) {    // Fix Vulnerabilities
     });
 });
 
+app.post("/takeDayOff", function(req, res) {
+    if (!req.session.filePath) {res.json({loggedIn: false}); return;}
+    req.session.user = SingleParse(req.session.filePath);
+
+    var { month, day, year, shift } = req.body;
+
+    var dayNumber = DayToNumber(month, day, year);
+    var request = DayToNumber(month, day, year) + "|" + shift;
+
+    if (request.includes("error")) {
+        res.sendStatus(404);
+        return;
+    }
+
+    if (!CanTakeDayOff(req.session.user, request)) {
+        res.sendStatus(403);
+    }
+    
+    for (var i = 0; i < req.session.user.daysOff.length; i++) {
+        if (req.session.user.daysOff[i] === request) {
+            res.sendStatus(409);
+            return;
+        } else if (req.session.user.daysOff[i].includes(dayNumber)) {
+            var split = req.session.user.daysOff[i].split("|");
+            split[1] = shift;
+            req.session.user.daysOff[i] = split.join("|");
+            req.session.user.update(req.session.filePath, function() {});
+            res.sendStatus(200);
+            return;
+        }
+    }
+
+    if (CanTakeDayOff(req.session.user, request)) {
+        req.session.user.daysOff.push(request);
+        req.session.user.update(req.session.filePath, function() {});
+        res.sendStatus(200);
+    }
+});
+
 app.post("/getUserInformation", function(req, res) {
 
     if (!req.session.filePath) {res.json({loggedIn: false}); return;}
@@ -426,7 +465,7 @@ function LookForAvailability(daysOff, dayIndex, shift) {
 function CanTakeDayOff(emp, dayOff) {
     var dayNumber = dayOff.split("|")[0];
     var shiftType = dayOff.split("|")[1];
-
+    if (shiftType === "A") {return true;}
     var closestSunday = ClosestSunday(dayNumber);
     var employees = Parse();
     var schedule = new Schedule();
@@ -495,7 +534,7 @@ function CanTakeDayOff(emp, dayOff) {
 function ClosestSunday(num) {
     var text = fs.readFileSync(__dirname + "/master/EnvironmentVariables.txt", "utf-8");
     text = text.split("\r\n");
-    var firstSunday = parseInt(text[1]) + 1;
+    var firstSunday = parseInt(text[1]);
 
     return num - ((num - firstSunday) % 7);
 }
@@ -626,4 +665,35 @@ function BuildWorkWeek(start, callback) {
 
     fs.writeFile(__dirname + "/master/schedule.txt", scheduleString, callback);
     
+}
+
+function DayToNumber(month, day, year) {
+    var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    if (daysInMonth.length < month || month < 1) {
+        return "error";
+    }
+
+    var dayOfYear = day;
+
+    
+    if ([2024, 2028, 2032, 2036, 2040, 2044, 2048, 2052, 2056].includes(year)) {
+        daysInMonth[1] = 29;
+    }
+
+    if (day > daysInMonth[month - 1] || day < 1) {
+        console.log("2");
+        return "error";
+    }
+
+    for (var i = 2025; i < year; i++) {
+        if ([2028, 2032, 2036, 2040, 2044, 2048, 2052, 2056].includes(i)) {dayOfYear += 366; continue;}
+        dayOfYear += 365;
+    }
+
+    for (var i = 0; i < month - 1; i++) {
+        dayOfYear += daysInMonth[i];
+    }
+
+    return dayOfYear - 1;
 }

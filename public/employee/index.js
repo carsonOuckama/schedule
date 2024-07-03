@@ -17,6 +17,7 @@ async function getInfo() {
 }
 
 async function updateInfo() {
+    await getInfo();
     var options = {
         method: 'POST',
         headers: {
@@ -62,6 +63,41 @@ async function UpdateUserData() {
     get("minimumDays").value = user.min;
     get("preferedDays").value = user.prefered;
     get("maximumDays").value = user.max;
+}
+
+async function takeDayOff() {
+    await getInfo();
+    var options = {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            month: parseInt(get('month').value),
+            day: parseInt(get("dayOfMonth").value),
+            year: parseInt(get("year").value),
+            shift: get("shift").value
+        }),
+        credentials: 'include'
+    };
+    var response = await fetch('/takeDayOff', options);
+    if (response.ok) {
+        get("dayOffMessage").textContent = "Complete!";
+        get("dayOffMessage").style.color = "green";
+        return;
+    } else if (response.status === 409) {
+        get("dayOffMessage").textContent = "This day is already taken off";
+        get("dayOffMessage").style.color = "red";
+    } else if (response.status === 404) {
+        get("dayOffMessage").textContent = "Day not found!";
+        get("dayOffMessage").style.color = "red";
+    } else if (response.status === 403) {
+        get("dayOffMessage").textContent = "This day is not available to take off!";
+        get("dayOffMessage").style.color = "red";
+    }
+
+    var data = await response.json();
+    if (data.loggedIn === false) window.location.href = "/";
 }
 
 getInfo().then(UpdateUserData);
